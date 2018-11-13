@@ -1,0 +1,21 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    digest-crc (0.4.1)
+    dotenv (2.5.0)
+    ruby-kafka (0.7.4)
+      digest-crc
+    ssdp (1.1.7)
+    wemote (0.2.3)
+      ssdp (~> 1.1, >= 1.1.6)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  dotenv
+  ruby-kafka
+  wemote
+
+BUNDLED WITH
+   1.17.1
