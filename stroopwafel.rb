@@ -35,11 +35,13 @@ class Stroopwafel
       ssl_client_cert_key: ENV['KAFKA_CLIENT_CERT_KEY']
     )
     consumer = @kafka.consumer(
-      group_id: "pendoreille-6647.wafflegroup",
+      group_id: "pendoreille-6647.wafflebotgroup",
       offset_commit_threshold: 1
     )
 
-    consumer.each_message(topic: "pendoreille-6647.wafflebot") do |message|
+    consumer.subscribe("pendoreille-6647.wafflebot")
+
+    consumer.each_message do |message|
       action = JSON.parse(message.value)["message"]
       puts "Stroopwafel Received #{action}"
 
@@ -74,8 +76,10 @@ class Stroopwafel
 
   def cook
     action, message = @working_recipe.shift
+    puts "Stroopwafel: sending #{action} to chef..."
     speak_chef(action)
     status, color = message
+    puts "Stroopwafel: sending #{status} to ui..."
     speak_ui(status, color)
   end
 
@@ -170,11 +174,12 @@ class WaffleChef
       ssl_client_cert_key: ENV['KAFKA_CLIENT_CERT_KEY']
     )
     consumer = @kafka.consumer(
-      group_id: "pendoreille-6647.wafflegroup",
+      group_id: "pendoreille-6647.wafflechefgroup",
       offset_commit_threshold: 1
     )
 
-    consumer.each_message(topic: "pendoreille-6647.wafflebot") do |message|
+    consumer.subscribe("pendoreille-6647.wafflechef")
+    consumer.each_message do |message|
       action = JSON.parse(message.value)["message"]
       puts "WaffleChef Received #{action}"
 
@@ -189,6 +194,7 @@ class WaffleChef
   end
 
   def cooking_timer
+    puts "#{method_name} start..."
     sleep 420
   end
 
@@ -207,47 +213,63 @@ class WaffleChef
   end
 
   def open_lid
+    puts "#{method_name} start..."
     @lift.forward(800)
     sleep 25
+    puts "#{method_name} end..."
   end
 
   def close_lid
+    puts "#{method_name} start..."
     @lift.forward(800)
     sleep 25
+    puts "#{method_name} end..."
   end
 
   def deploy_dispenser
+    puts "#{method_name} start..."
     @swing.forward(5500)
     sleep 7
+    puts "#{method_name} end..."
   end
 
   def retract_dispenser
+    puts "#{method_name} start..."
     @swing.backward(5500)
     sleep 7
+    puts "#{method_name} end..."
   end
 
   def dispense
+    puts "#{method_name} start..."
     @valve.on
     @pump.on
     sleep 7
     @pump.off
     @valve.off
+    puts "#{method_name} end..."
   end
 
   def flip_iron
+    puts "#{method_name} start..."
     @flip.forward(42000)
     sleep 10
+    puts "#{method_name} end..."
   end
 
   def flip_iron_back
+    puts "#{method_name} start..."
     @flip.backward(42000)
     sleep 10
+    puts "#{method_name} end..."
   end
 
   def finish
+    puts "#{method_name} start..."
     @lift.forward(800)
     sleep 10
     `omxplayer zelda.mp3`
+    puts "#{method_name} end..."
   end
 end
 
