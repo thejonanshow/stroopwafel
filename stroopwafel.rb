@@ -34,8 +34,12 @@ class Stroopwafel
       ssl_client_cert: ENV['KAFKA_CLIENT_CERT'],
       ssl_client_cert_key: ENV['KAFKA_CLIENT_CERT_KEY']
     )
+    consumer = @kafka.consumer(
+      group_id: "pendoreille-6647.wafflegroup",
+      offset_commit_threshold: 1
+    )
 
-    @kafka.each_message(topic: "pendoreille-6647.wafflebot") do |message|
+    consumer.each_message(topic: "pendoreille-6647.wafflebot") do |message|
       action = JSON.parse(message.value)["message"]
       puts "Stroopwafel Received #{action}"
 
@@ -165,8 +169,12 @@ class WaffleChef
       ssl_client_cert: ENV['KAFKA_CLIENT_CERT'],
       ssl_client_cert_key: ENV['KAFKA_CLIENT_CERT_KEY']
     )
+    consumer = @kafka.consumer(
+      group_id: "pendoreille-6647.wafflegroup",
+      offset_commit_threshold: 1
+    )
 
-    @kafka.each_message(topic: "pendoreille-6647.wafflechef") do |message|
+    consumer.each_message(topic: "pendoreille-6647.wafflebot") do |message|
       action = JSON.parse(message.value)["message"]
       puts "WaffleChef Received #{action}"
 
