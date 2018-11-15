@@ -1,7 +1,7 @@
 require 'dotenv/load'
 require "json"
 require "ruby-kafka"
-require "wemo"
+require "wemote"
 require "rpi_gpio"
 
 class Stroopwafel
@@ -36,10 +36,9 @@ class Stroopwafel
     )
 
     @kafka.each_message(topic: "pendoreille-6647.wafflebot") do |message|
-      action = JSON.parse(message)
-      puts "Received #{action}"
+      action = JSON.parse(message.value)["message"]
+      puts "Stroopwafel Received #{action}"
 
-      # check for done things here and call them if they're defined
       if action.match /_done$/
         self.send(action) if respond_to? action
       elsif action == "start"
@@ -87,7 +86,10 @@ class Stroopwafel
   end
 
   def start
-    @shutdown_timer.kill
+    cook
+    return
+
+    @shutdown_timer.kill if @shutdown_timer
     @shutdown_timer = nil
 
     enable_waffle_iron
@@ -134,6 +136,7 @@ class Stroopwafel
 
   def reset
     speak_chef("reset")
+    return
 
     @shutdown_timer = Thread.new do
       sleep 220
@@ -164,9 +167,8 @@ class WaffleChef
     )
 
     @kafka.each_message(topic: "pendoreille-6647.wafflechef") do |message|
-      parsed = JSON.parse(message)
-      action = parsed["message"]
-      puts "Received #{action}"
+      action = JSON.parse(message.value)["message"]
+      puts "WaffleChef Received #{action}"
 
       self.send(action) if respond_to? action
       speak_stroop("#{action}_done")
@@ -212,7 +214,7 @@ class WaffleChef
   end
 
   def retract_dispenser
-    @swing.forward(5500)
+    @swing.backward(5500)
     sleep 7
   end
 
